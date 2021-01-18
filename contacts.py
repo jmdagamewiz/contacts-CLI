@@ -7,7 +7,7 @@ class Contact:
     name_limit_length = 30
     phone_limit_length = 15
     email_limit_length = 30
-    rowid_limit_length = 3
+    contact_id_limit_length = 3
 
     def __init__(self, name, phone_num, email):
         self.name = name
@@ -34,11 +34,11 @@ class Contact:
         connect.close()
 
     @classmethod
-    def if_exists(cls, rowid):
+    def if_exists(cls, contact_id):
         connect = sqlite3.connect(Contact.database_file_name)
         cursor = connect.cursor()
 
-        cursor.execute(f"SELECT * from contacts WHERE rowid={rowid}")
+        cursor.execute(f"SELECT * from contacts WHERE rowid={contact_id}")
         contact = cursor.fetchall()
 
         connect.close()
@@ -49,20 +49,20 @@ class Contact:
             return True
 
     @classmethod
-    def delete_from_database(cls, rowid):
+    def delete_from_database(cls, contact_id):
         connect = sqlite3.connect(Contact.database_file_name)
         cursor = connect.cursor()
 
-        cursor.execute(f"DELETE from contacts WHERE rowid={rowid}")
+        cursor.execute(f"DELETE from contacts WHERE rowid={contact_id}")
         connect.commit()
         connect.close()
 
     @classmethod
-    def update_database(cls, rowid, info_type, value):
+    def update_database(cls, contact_id, info_type, value):
         connect = sqlite3.connect(Contact.database_file_name)
         cursor = connect.cursor()
 
-        cursor.execute(f"UPDATE contacts SET {info_type}='{value}' WHERE rowid={rowid}")
+        cursor.execute(f"UPDATE contacts SET {info_type}='{value}' WHERE rowid={contact_id}")
         connect.commit()
         connect.close()
 
@@ -86,7 +86,7 @@ class Contact:
         connect.close()
 
     @classmethod
-    def print(cls):
+    def list_contacts(cls):
         connect = sqlite3.connect(Contact.database_file_name)
         cursor = connect.cursor()
 
@@ -95,11 +95,11 @@ class Contact:
             contacts = cursor.fetchall()
 
             print()
-            print("ID".ljust(cls.rowid_limit_length) + " " + "Name".ljust(cls.name_limit_length) + " "
+            print("ID".ljust(cls.contact_id_limit_length) + " " + "Name".ljust(cls.name_limit_length) + " "
                   + "Phone #".ljust(cls.phone_limit_length) + " " + "Email".ljust(cls.email_limit_length))
 
             for contact in contacts:
-                print(str(contact[0]).ljust(cls.rowid_limit_length) + " " + contact[1].ljust(cls.name_limit_length) +
+                print(str(contact[0]).ljust(cls.contact_id_limit_length) + " " + contact[1].ljust(cls.name_limit_length) +
                       " " + contact[2].ljust(cls.phone_limit_length) + " " + contact[3].ljust(cls.email_limit_length))
 
         except sqlite3.OperationalError as e:
@@ -147,13 +147,13 @@ def get_new_contact():
     print("\nSuccessfully added to contacts.")
 
 
-def update_contact_info(rowid):
+def update_contact_info(contact_id):
 
     # checks if contact exists first
-    if Contact.if_exists(rowid):
+    if Contact.if_exists(contact_id):
 
         # gets update info from user
-        print(f"\nUpdate Info for Contact {rowid}: \n")
+        print(f"\nUpdate Info for Contact {contact_id}: \n")
 
         while True:
             info_type = input("What do you want to update? ")
@@ -163,21 +163,21 @@ def update_contact_info(rowid):
                 print("Info type must be name, phone, or email only.")
 
         value = input(f"{info_type} : ")
-        Contact.update_database(rowid, info_type, value)
+        Contact.update_database(contact_id, info_type, value)
 
-        print(f"\nSuccessfully updated Contact {rowid}.")
+        print(f"\nSuccessfully updated Contact {contact_id}.")
 
     else:
-        print(f"ID {rowid} does not exist.")
+        print(f"ID {contact_id} does not exist.")
 
 
-def delete_contact_info(rowid):
+def delete_contact_info(contact_id):
     # checks if contact exists first
 
-    if Contact.if_exists(rowid):
-        Contact.delete_from_database(rowid)
+    if Contact.if_exists(contact_id):
+        Contact.delete_from_database(contact_id)
     else:
-        print(f"ID {rowid} does not exist.")
+        print(f"ID {contact_id} does not exist.")
 
 
 def main():
@@ -194,7 +194,7 @@ def main():
     if args.add == "add":
         get_new_contact()
     if args.list == "list":
-        Contact.print()
+        Contact.list_contacts()
     if args.delete is not None:
         delete_contact_info(args.delete)
     if args.update is not None:
