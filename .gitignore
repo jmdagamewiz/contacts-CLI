@@ -1,3 +1,6 @@
+# Exe folder
+output/
+
 # Database
 *.db
 

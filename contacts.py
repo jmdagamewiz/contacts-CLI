@@ -138,11 +138,11 @@ def get_new_contact():
     while True:
         email = input("Email: ")
         if len(email) > Contact.email_limit_length:
-            print(f"Phone number must be less than {Contact.email_limit_length} characters.")
+            print(f"Email must be less than {Contact.email_limit_length} characters.")
         else:
             break
 
-    contact1 = Contact(name, phone_num, email)
+    Contact(name, phone_num, email)
 
     print("\nSuccessfully added to contacts.")
 
